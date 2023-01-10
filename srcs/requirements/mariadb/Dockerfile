@@ -1,14 +1,19 @@
 FROM alpine:3.16.3
- 
-RUN apk update && \
-    apk add --no-cache mariadb mariadb-client mariadb-server-utils
 
-RUN mkdir /run/mysqld && chown mysql /run/mysqld
+RUN apk update && apk upgrade
 
-RUN mysql_install_db --user=mysql --datadir=/var/lib/mysql --auth-root-authentication-method=normal
+RUN apk add --no-cache  mariadb \
+                        mariadb-client \
+                        mariadb-server-utils
 
-COPY ./conf/maria.cnf /etc/my.cnf.d/mariadb-server.cnf
+RUN mkdir -p /run/mysqld
 
-EXPOSE 3306
+COPY ./conf/config.cnf /etc/my.cnf
 
-CMD ["mysqld", "--user=mysql"]
+RUN chown -R mysql:mysql /var/lib/mysql
+RUN chmod 777 /var/lib/mysql
+
+COPY ./tools/run.sh /tmp/run_mariadb.sh
+RUN chmod +x /tmp/run_mariadb.sh
+
+ENTRYPOINT ["sh", "/tmp/run_mariadb.sh"]
