@@ -1,0 +1,11 @@
+services:
+  mariadb:
+    image: 'test-docker:latest'
+    container_name: docker-teste
+    build:
+      context: ./requirements/mariadb
+    ports:
+      - '3306:3306'
+
+volumes:
+  volumes:
