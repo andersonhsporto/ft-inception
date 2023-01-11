@@ -1,11 +1,36 @@
 services:
   mariadb:
-    image: 'test-docker:latest'
-    container_name: docker-teste
+    container_name: mariadb-database
+    env_file: .env
     build:
       context: ./requirements/mariadb
     ports:
       - '3306:3306'
+
+  wordpress:
+    image: 'wordpress:42'
+    container_name: wordpress-client
+    env_file: .env
+    build:
+      context: ./requirements/wordpress
+    # restart: always
+
+  nginx:
+    container_name: nginx-server
+    build:
+      context: ./requirements/nginx
+    depends_on:
+      - wordpress
+    networks:
+      - rede-inception
+    ports:
+      - '80:80'
+      - '443:443'
+
+networks:
+  rede-inception:
+    name: rede-inception
+    driver: bridge
 
 volumes:
   volumes:
