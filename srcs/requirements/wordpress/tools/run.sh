@@ -2,6 +2,11 @@
 
 sleep 5
 
+if [ -f ./wp-config.php ]
+then
+	echo "Wordpress already installed"
+else
+
 echo "Installing Wordpress..."
 
 curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
@@ -36,5 +41,5 @@ wp user create \
 sleep 5
 
 echo "Wordpress installed"
-
+fi
 exec php-fpm8 -F

@@ -16,4 +16,6 @@ RUN chmod 777 /var/lib/mysql
 COPY ./tools/run.sh /tmp/run_mariadb.sh
 RUN chmod +x /tmp/run_mariadb.sh
 
+EXPOSE 3306
+
 ENTRYPOINT ["sh", "/tmp/run_mariadb.sh"]

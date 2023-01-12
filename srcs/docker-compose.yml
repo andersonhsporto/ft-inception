@@ -4,15 +4,25 @@ services:
     env_file: .env
     build:
       context: ./requirements/mariadb
+    networks:
+      - rede-inception
+    volumes:
+      - wordpress-database:/var/lib/mysql
     ports:
-      - '3306:3306'
+      - "3306:3306"
 
   wordpress:
-    image: 'wordpress:42'
+    image: "wordpress:42"
     container_name: wordpress-client
     env_file: .env
     build:
       context: ./requirements/wordpress
+    depends_on:
+      - mariadb
+    volumes:
+      - wordpress-website:/var/www/html
+    networks:
+      - rede-inception
     # restart: always
 
   nginx:
@@ -22,10 +32,12 @@ services:
       context: ./requirements/nginx
     depends_on:
       - wordpress
+    volumes:
+      - wordpress-website:/var/www/html
     networks:
       - rede-inception
     ports:
-      - '443:443'
+      - "443:443"
 
 networks:
   rede-inception:
@@ -33,4 +45,18 @@ networks:
     driver: bridge
 
 volumes:
-  volumes:
+  wordpress-database:
+    name: wordpress-database
+    driver: local
+    driver_opts:
+      type: none
+      device: .
+      o: bind
+
+  wordpress-website:
+    name: wordpress-website
+    driver: local
+    driver_opts:
+      type: none
+      device: .
+      o: bind
