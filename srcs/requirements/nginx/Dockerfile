@@ -1,21 +1,32 @@
-FROM alpine:3.16.3
+######################################################################
+############################ BASE IMAGE  #############################
+######################################################################
 
-RUN apk update && apk upgrade
+FROM debian:buster
 
-RUN apk add --no-cache  nginx openssl
+######################################################################
+########################### INSTALL NGINX  ###########################
+######################################################################
 
-RUN mkdir -p /var/www/
+RUN apt-get update && apt-get upgrade -y
 
-RUN mkdir -p /etc/nginx/ssl
+RUN	apt-get install -y nginx
 
-RUN chmod 700 /etc/nginx/ssl
+RUN rm -rf /var/lib/apt/lists/*
 
-RUN openssl req -x509 \
-	-nodes \
-	-days 365 \
-	-newkey rsa:2048 \
-	-keyout /etc/nginx/ssl/nginx.key \
-	-out /etc/nginx/ssl/nginx.crt \
-	-subj "/C=BR/ST=SP/L=SP/O=42SP/OU=anhigo-s"
+######################################################################
+########################### CONFIGURATION ############################
+######################################################################
+
+# Certificate
+COPY conf/certificate /etc/ssl/certificate
+
+COPY conf/anhigo-s.conf /etc/nginx/sites-available/anhigo-s
+
+# Create symbolic link from sites-available to sites-enabled 
+RUN ln -s /etc/nginx/sites-available/anhigo-s /etc/nginx/sites-enabled/anhigo-s
+
+# Remove index HTML file
+RUN	rm /var/www/html/index.nginx-debian.html
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

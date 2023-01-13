@@ -1,62 +1,74 @@
 services:
-  mariadb:
-    container_name: mariadb-database
-    env_file: .env
-    build:
-      context: ./requirements/mariadb
-    networks:
-      - rede-inception
-    volumes:
-      - wordpress-database:/var/lib/mysql
-    ports:
-      - "3306:3306"
-
-  wordpress:
-    image: "wordpress:42"
-    container_name: wordpress-client
-    env_file: .env
-    build:
-      context: ./requirements/wordpress
-    depends_on:
-      - mariadb
-    volumes:
-      - wordpress-website:/var/www/html
-    networks:
-      - rede-inception
-    # restart: always
-
   nginx:
-    container_name: nginx-server
-    env_file: .env
-    build:
-      context: ./requirements/nginx
-    depends_on:
-      - wordpress
+    build: requirements/nginx/
+    container_name: nginx
+    image: nginx
     volumes:
-      - wordpress-website:/var/www/html
-    networks:
-      - rede-inception
+      - "wordpress-volume:/var/www/wordpress"
     ports:
       - "443:443"
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    restart: always
 
-networks:
-  rede-inception:
-    name: rede-inception
-    driver: bridge
+  mariadb:
+    build: requirements/mariadb/
+    container_name: mariadb
+    image: mariadb
+    volumes:
+      - "mariadb-volume:/var/lib/mysql"
+    networks:
+      - inception
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE:     ${MARIADB_DATABASE}
+      MARIADB_USER:      ${MARIADB_USER}
+      MARIADB_PASSWORD:      ${MARIADB_PASSWORD}
+    restart: always
+  
+  wordpress:
+    build: requirements/wordpress/
+    container_name: wordpress
+    image: wordpress
+    volumes:
+      - "wordpress-volume:/var/www/wordpress"
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+    environment:
+      MARIADB_ROOT_HOST:     ${MARIADB_ROOT_HOST}
+      MARIADB_DATABASE:     ${MARIADB_DATABASE}
+      MARIADB_USER:      ${MARIADB_USER}
+      MARIADB_PASSWORD:      ${MARIADB_PASSWORD}
+      DOMAIN_NAME:    ${DOMAIN_NAME}
+      WP_TITLE:       ${WP_TITLE}
+      WP_ADMIN_USR:   ${WP_ADMIN_USR}
+      WP_ADMIN_PWD:   ${WP_ADMIN_PWD}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL}
+      WP_USR:         ${WP_USR}
+      WP_PWD:         ${WP_PWD}
+      WP_EMAIL:       ${WP_EMAIL}
+    restart: always
 
 volumes:
-  wordpress-database:
-    name: wordpress-database
+  mariadb-volume:
     driver: local
     driver_opts:
-      type: none
-      device: .
-      o: bind
+      type: 'none'
+      o: 'bind'
+      device: ${MARIADB_HOST_VOLUME_PATH}
 
-  wordpress-website:
-    name: wordpress-website
+  wordpress-volume:
     driver: local
     driver_opts:
-      type: none
-      device: .
-      o: bind
+      type: 'none'
+      o: 'bind'
+      device: ${WORDPRESS_HOST_VOLUME_PATH}
+
+networks:
+  inception:
+    driver: bridge
+    name: inception

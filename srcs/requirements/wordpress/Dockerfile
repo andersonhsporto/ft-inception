@@ -1,50 +1,48 @@
-FROM alpine:3.16.3
+######################################################################
+############################ BASE IMAGE  #############################
+######################################################################
 
-RUN apk update && apk upgrade
+FROM debian:buster
 
-RUN apk add bash \
-    php8 \
-    php8-fpm \
-    php8-mysqli \
-    php8-opcache \
-    php8-gd \
-    php8-zlib \
-    php8-curl \
-    php8-bcmath \
-    php8-ctype \
-    php8-iconv \
-    php8-intl \
-    php8-json \
-    php8-mbstring \
-    php8-mysqlnd \
-    php8-openssl \
-    php8-pdo \
-    php8-pdo_mysql \
-    php8-pdo_pgsql \
-    php8-pdo_sqlite \
-    php8-phar \
-    php8-posix \
-    php8-session \
-    php8-soap \
-    php8-xml \
-    php8-zip \
-    libmcrypt-dev \
-	curl \
-	libltdl
+######################################################################
+########################## INSTALL  PHP ##############################
+######################################################################
 
-RUN apk add lighttpd
-RUN apk add mariadb-client
+RUN apt-get update && apt-get upgrade -y
 
-RUN apk update
+RUN apt-get install -y php php7.3-fpm php-pear php-cgi php-common php-zip php-mbstring php-net-socket php-gd php-xml-util php-mysql php-gettext php-bcmath wget mariadb-client
 
-RUN adduser -u 82 -D -S -G www-data www-data
-RUN chown -R www-data:www-data /var/www
-RUN chmod 777 /var/www
+RUN rm -rf /var/lib/apt/lists/*
 
-COPY ./conf/www.conf /etc/php8/php-fpm.d/www.conf
-COPY ./conf/wp-config.php /www/wp-config.php
-COPY ./tools/run.sh /tmp/run_wordpress.sh
+######################################################################
+########################## INSTALL WORDPRESS #########################
+######################################################################
 
-RUN chmod +x /tmp/run_wordpress.sh
+# Download WordPress CLI
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 
-ENTRYPOINT ["sh", "/tmp/run_wordpress.sh"]
+RUN chmod +x wp-cli.phar
+
+RUN mv wp-cli.phar /usr/local/bin/wp
+
+######################################################################
+########################### CONFIGURATION ############################
+######################################################################
+
+RUN mkdir /run/php
+
+#RUN sed "s/listen = \/run\/php\/php7.3-fpm.sock/listen = 9000/" -i /etc/php/7.3/fpm/pool.d/www.conf
+
+RUN sed -i "s/listen = \/run\/php\/php7.3-fpm.sock/listen = 9000/" /etc/php/7.3/fpm/pool.d/www.conf
+
+RUN touch /var/log/php7.3-fpm.log
+
+COPY tools/start.sh /var/www/wordpress/start.sh
+
+RUN chown -R www-data:www-data /run/php /var/log/php7.3-fpm.log /var/www/wordpress
+
+USER www-data
+
+WORKDIR /var/www/wordpress/
+
+ENTRYPOINT ["/bin/sh", "start.sh"]

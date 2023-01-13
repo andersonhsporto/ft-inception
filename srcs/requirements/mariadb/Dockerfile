@@ -1,21 +1,31 @@
-FROM alpine:3.16.3
+######################################################################
+############################ BASE IMAGE  #############################
+######################################################################
 
-RUN apk update && apk upgrade
+FROM debian:buster
 
-RUN apk add --no-cache  mariadb \
-                        mariadb-client \
-                        mariadb-server-utils
+######################################################################
+########################### INSTALL MARIADB ##########################
+######################################################################
 
-RUN mkdir -p /run/mysqld
+RUN apt-get update && apt-get upgrade -y
 
-COPY ./conf/config.cnf /etc/my.cnf
+RUN	apt-get install -y mariadb-server
 
-RUN chown -R mysql:mysql /var/lib/mysql
-RUN chmod 777 /var/lib/mysql
+######################################################################
+########################### CONFIG MARIADB ###########################
+######################################################################
 
-COPY ./tools/run.sh /tmp/run_mariadb.sh
-RUN chmod +x /tmp/run_mariadb.sh
+RUN rm /etc/mysql/mariadb.conf.d/50-server.cnf
 
-EXPOSE 3306
+COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d
 
-ENTRYPOINT ["sh", "/tmp/run_mariadb.sh"]
+RUN chmod 644 /etc/mysql/mariadb.conf.d/50-server.cnf
+
+COPY tools/start.sh /tmp
+
+######################################################################
+##################### USING START AS ENTRYPOINT  #####################
+######################################################################
+
+ENTRYPOINT ["/bin/sh", "/tmp/start.sh"]
