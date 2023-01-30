@@ -11,6 +11,19 @@ This project is about setting up a complete web server. It must run multiples se
 - System administration
 - Web stack
 
+## Structure
+
+In the image below, you can see the structure of the project:
+
+
+
+<p align="center">
+<img src="https://github.com/andersonhsporto/ft-inception/blob/main/srcs/requirements/tools/struct.png" width="600px" alt="struct"/><br>
+</p>
+
+
+![ft_inception]()
+
 ## Instructions
 
 To run this project, you will need Docker and docker-compose installed on your machine.
