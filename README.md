@@ -19,29 +19,34 @@ To run this project, you will need Docker and docker-compose installed on your m
 
 To run the project, you will need to run the following command:
 
-```make all
+```bash
+	make all
 ```
 
 This will build the images and run the containers.
 
 To stop the containers, you will need to run the following command:
 
-```make stop
+```bash
+	make stop
 ```
 
 To delete the containers, you will need to run the following command:
 
-```make clean
+```bash
+	make clean
 ```
 
 To delete the containers and images, you will need to run the following command:
 
-```make fclean
+```bash
+	make fclean
 ```
 
 To rebuild the images, you will need to run the following command:
 
-```make re
+```bash
+	make re
 ```
 
 ## Docker
