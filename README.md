@@ -18,7 +18,7 @@ In the image below, you can see the structure of the project:
 
 
 <p align="center">
-<img src="https://github.com/andersonhsporto/ft-inception/blob/main/srcs/requirements/tools/struct.png" width="600px" alt="struct"/><br>
+<img src="https://user-images.githubusercontent.com/47704550/224850772-5fc7b9a7-c680-4eda-87f1-e46ffb9e9284.png" width="600px" alt="struct"/><br>
 </p>
 
 ## Instructions
