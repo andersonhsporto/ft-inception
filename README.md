@@ -15,11 +15,32 @@ This project is about setting up a complete web server. It must run multiples se
 
 In the image below, you can see the structure of the project:
 
-
-
 <p align="center">
 <img src="https://user-images.githubusercontent.com/47704550/224850772-5fc7b9a7-c680-4eda-87f1-e46ffb9e9284.png" width="600px" alt="struct"/><br>
 </p>
+
+## Services
+
+### Wordpress
+
+WordPress is a free and open-source content management system written in PHP and paired with a MySQL or MariaDB database. Features include a plugin architecture and a template system, referred to within WordPress as Themes.
+
+### MariaDB
+
+MariaDB is a community-developed, commercially supported fork of the MySQL relational database management system (RDBMS), intended to remain free and open-source software under the GNU General Public License. Development is led by some of the original developers of MySQL, who forked it due to concerns over its acquisition by Oracle Corporation in 2009.
+
+### Nginx
+
+Nginx is a web server which can also be used as a reverse proxy, load balancer, mail proxy and HTTP cache. The software was created by Igor Sysoev and first publicly released in 2004. A company of the same name was founded in 2011 to provide support and Nginx plus paid software.
+
+## Ports
+
+| Service     | Port | Exposed |
+| ----------- | ---- | ------- |
+| Wordpress   | 8080 | no      |
+| MariaDB     | 3306 | no      |
+| Nginx (SSL) | 443  | yes     |
+
 
 ## Instructions
 
